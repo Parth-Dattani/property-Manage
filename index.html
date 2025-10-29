@@ -7,6 +7,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     <title>Property Management System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
     <style>
         * {
             margin: 0;
@@ -16,9 +21,9 @@
         }
 
         body {
-display: flex;
-  justify-content: center;
-  align-items: flex-start;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -30,35 +35,33 @@ display: flex;
 
         .container {
             width: 100%;
-  max-width: 430px; /* fixed mobile width */
-  margin: 0 auto;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
         }
 
-        /* Bottom Navigation Bar */
-       /* Centered bottom navigation inside the mobile container */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 430px;  /* match phone width */
-  background: white;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
-  height: 70px;
-  border-top: 1px solid #eee;
-  z-index: 1000;
-  border-radius: 0 0 20px 20px;
-}
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            height: 70px;
+            border-top: 1px solid #eee;
+            z-index: 1000;
+            border-radius: 0 0 20px 20px;
+        }
 
         .nav-item {
             flex: 1;
@@ -109,7 +112,6 @@ display: flex;
             font-weight: 500;
         }
 
-        /* Main Content */
         .main-content {
             padding: 12px;
             max-width: 100vw;
@@ -150,12 +152,17 @@ display: flex;
             margin-bottom: 4px;
         }
 
+        .page-header h3 {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
         .page-header p {
             color: #777;
             font-size: 13px;
         }
 
-        /* Dashboard Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -182,51 +189,6 @@ display: flex;
             background: linear-gradient(90deg, #667eea, #764ba2);
         }
 
-        .stat-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .stat-card h3 {
-            color: #777;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .stat-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: white;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 6px;
-        }
-
-        .stat-change {
-            font-size: 11px;
-            color: #10b981;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .stat-change.negative {
-            color: #ef4444;
-        }
-
-        /* Property Management Form */
         .add-property-container {
             background: #fff;
             border-radius: 12px;
@@ -287,28 +249,23 @@ display: flex;
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: #555;
-            font-weight: 600;
             font-size: 13px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input, .form-group select {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 2px solid #e5e5e5;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            -webkit-appearance: none;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
         }
-
+        
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
@@ -343,98 +300,21 @@ display: flex;
             transform: scale(0.97);
         }
 
-        /* Sub Tabs */
-       .sub-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-.sub-btn {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  background: #f8f8ff;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.sub-btn.active {
-  background: #ebe9ff;
-  color: #4a2fd4;
-  border-color: #4a2fd4;
-}
+        .sub-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
 
-.card {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-.card.yellow { background: #fffbea; }
-.card.green { background: #e9fff0; }
+        .sub-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f8f8ff;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-.form-row, .expense-group {
-  margin-bottom: 10px;
-}
-.expense-item,.add-row{display:flex;gap:6px;margin-bottom:8px}
-.expense-item input,.add-row input{flex:1;padding:8px;border-radius:6px;border:1px solid #ccc}
-.expense-item button{background:#ff4d4f;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer}
-.add-row button,.add-btn{background:#4a2fd4;color:#fff;border:none;border-radius:6px;padding:8px 12px;cursor:pointer}
-.summary-box{background:#f5f4ff;border-radius:8px;padding:12px;margin-top:10px}
-.dynamic-summary{background:#edfaff;border-radius:8px;padding:12px;margin-top:15px}
-.form-row label {
-  display: block;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-input[type="number"], input[type="text"] {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-.add-revenue input {
-  width: calc(50% - 10px);
-}
-.add-revenue button {
-  background: #4a2fd4;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 14px;
-  cursor: pointer;
-}
-.revenue-item {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-.revenue-item input {
-  flex: 1;
-}
-.revenue-item button {
-  background: #ff4d4f;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.summary-box {
-  background: #f5f4ff;
-  border-radius: 8px;
-  padding: 12px;
-  font-weight: 500;
-}
-.dynamic-summary {
-  background: #edfaff;
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 15px;
-}.buttons{display:flex;justify-content:space-between;margin-top:20px}
-.next-btn,.back-btn{border:none;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer}
-.next-btn{background:#4a2fd4;color:#fff}
-.back-btn{background:#f1f1f1;color:#444}
         .sub-btn.active {
             background: #667eea;
             color: white;
@@ -448,7 +328,73 @@ input[type="number"], input[type="text"] {
             display: block;
         }
 
-        /* Upload Section */
+        .card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .card.yellow { background: #fffbea; }
+        .card.green { background: #e9fff0; }
+
+        .form-row {
+            margin-bottom: 10px;
+        }
+
+        .form-row label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .expense-item, .add-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .expense-item input, .add-row input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .expense-item button {
+            background: #ff4d4f;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+        }
+
+        .add-row button, .add-btn {
+            background: #4a2fd4;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .summary-box {
+            background: #f5f4ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .dynamic-summary {
+            background: #edfaff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+
         .upload-box {
             border: 2px dashed #a88df0;
             border-radius: 10px;
@@ -495,7 +441,6 @@ input[type="number"], input[type="text"] {
             border: 2px solid #ddd;
         }
 
-        /* Slider */
         .slider-group {
             margin: 16px 0;
         }
@@ -513,20 +458,6 @@ input[type="number"], input[type="text"] {
             height: 6px;
         }
 
-        .summary-box {
-            background: #f0f7ff;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 14px;
-            border-left: 4px solid #667eea;
-        }
-
-        .summary-box p {
-            font-size: 13px;
-            color: #333;
-        }
-
-        /* Property Grid */
         .property-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -564,10 +495,6 @@ input[type="number"], input[type="text"] {
 
         .property-badge.available {
             color: #667eea;
-        }
-
-        .property-badge.maintenance {
-            color: #f59e0b;
         }
 
         .property-content {
@@ -664,7 +591,6 @@ input[type="number"], input[type="text"] {
             transform: scale(0.9);
         }
 
-        /* Cash Flow */
         .cash-flow-cards {
             display: grid;
             grid-template-columns: 1fr;
@@ -749,113 +675,154 @@ input[type="number"], input[type="text"] {
             color: #10b981;
         }
 
-        /* Settings */
-        .settings-section {
-            background: white;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 12px;
+        .settings-container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 24px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-top: 25px;
         }
 
-        .settings-section h3 {
-            font-size: 15px;
+        .settings-container h2 {
+            text-align: center;
             color: #333;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
+            font-size: 20px;
+            margin-bottom: 25px;
         }
 
-        .setting-item {
+        .profile-image-section {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-        .setting-item:last-child {
-            border-bottom: none;
-        }
-
-        .setting-info h4 {
-            font-size: 13px;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .setting-info p {
-            font-size: 12px;
-            color: #777;
-        }
-
-        .toggle-switch {
+            justify-content: center;
+            margin-bottom: 25px;
             position: relative;
-            width: 50px;
-            height: 26px;
         }
 
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
+        .image-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #6f5de7;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.3s;
-            border-radius: 34px;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.3s;
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             border-radius: 50%;
         }
 
-        input:checked + .slider {
-            background-color: #667eea;
+        .image-wrapper .overlay {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 30%;
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            border-bottom-left-radius: 50%;
+            border-bottom-right-radius: 50%;
         }
 
-        input:checked + .slider:before {
-            transform: translateX(24px);
+        .image-wrapper:hover .overlay {
+            opacity: 1;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 14px 20px;
+        #profilePicInput {
+            display: none;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 6px;
+        }
+
+        .section label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .section input,
+        .section select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 13px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .section input:focus,
+        .section select:focus {
+            outline: none;
+            border-color: #6f5de7;
+            box-shadow: 0 0 0 2px rgba(111, 93, 231, 0.15);
+        }
+
+        .export-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .export-btn {
+            background: #6f5de7;
+            color: #fff;
             border: none;
             border-radius: 8px;
+            padding: 10px 0;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .export-btn:hover {
+            background: #5a4ac7;
+            transform: translateY(-1px);
+        }
+
+        .save-btn {
             width: 100%;
-            justify-content: center;
-            margin-top: 10px;
-            touch-action: manipulation;
+            background: #12b886;
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            padding: 12px 0;
+            font-size: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 5px;
+            box-shadow: 0 3px 10px rgba(18, 184, 134, 0.3);
+            transition: all 0.2s ease;
         }
 
-        .btn-primary:active {
-            transform: scale(0.97);
+        .save-btn:hover {
+            background: #0fa678;
+            transform: translateY(-2px);
         }
 
-        /* Search Filter */
         .search-filter {
             background: white;
             padding: 12px;
@@ -898,7 +865,6 @@ input[type="number"], input[type="text"] {
             background: white;
             width: 100%;
             margin-bottom: 10px;
-            -webkit-appearance: none;
         }
 
         .filter-select:last-child {
@@ -928,7 +894,6 @@ input[type="number"], input[type="text"] {
             color: #555;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -1020,78 +985,95 @@ input[type="number"], input[type="text"] {
         .btn-danger:active {
             transform: scale(0.95);
         }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <main class="main-content">
+           
             <!-- Dashboard Page -->
-            <div id="dashboard" class="page active">
-                <div class="page-header">
-                    <h1>Dashboard</h1>
-                    <p>Welcome back! Here's your property overview</p>
-                </div>
+<div id="dashboard" class="page active" style="background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%); min-height: 100vh; padding-bottom: 100px;">
+    <div class="page-header" style="background: transparent; box-shadow: none;">
+        <h1 style="color: white;">Dashboard</h1>
+       <p style="color: #e0e7ff;">Overview of your properties and financial performance</p>
 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <h3>Properties</h3>
-                            <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                                <i class="fas fa-building"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="totalProperties">3</div>
-                        <div class="stat-change">
-                            <i class="fas fa-arrow-up"></i> Active
-                        </div>
-                    </div>
+    </div>
 
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <h3>Revenue</h3>
-                            <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                                <i class="fas fa-dollar-sign"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="monthlyRevenue">$9.8k</div>
-                        <div class="stat-change">
-                            <i class="fas fa-arrow-up"></i> +8.3%
-                        </div>
-                    </div>
+    <!-- Income / Expense / Profit -->
+    <div class="page-header" style="background: white;">
+        <h3>Total Income</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="dashIncome" style="font-size: 24px; font-weight: 600; color: #10b981;">₹0</span>
+            <i class="fas fa-arrow-up" style="color: #10b981;"></i>
+        </div>
+        <p style="color: #6b7280; margin-top: 4px;">This month</p>
+    </div>
 
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <h3>Occupied</h3>
-                            <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="occupiedUnits">67%</div>
-                        <div class="stat-change">
-                            <i class="fas fa-arrow-up"></i> +3%
-                        </div>
-                    </div>
+    <div class="page-header" style="background: white;">
+        <h3>Total Expenses</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="dashExpense" style="font-size: 24px; font-weight: 600; color: #ef4444;">₹0</span>
+            <i class="fas fa-arrow-down" style="color: #ef4444;"></i>
+        </div>
+        <p style="color: #6b7280; margin-top: 4px;">This month</p>
+    </div>
 
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <h3>Maintenance</h3>
-                            <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                                <i class="fas fa-tools"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="maintenanceRequests">1</div>
-                        <div class="stat-change negative">
-                            <i class="fas fa-arrow-down"></i> Pending
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="page-header">
-                    <h2 style="font-size: 16px;">Recent Properties</h2>
-                </div>
-                
-                <div class="property-grid" id="recent-properties"></div>
+    <div class="page-header" style="background: white;">
+        <h3>Net Profit</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="dashProfit" style="font-size: 24px; font-weight: 600; color: #3b82f6;">₹0</span>
+            <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
+        </div>
+        <p style="color: #6b7280; margin-top: 4px;">This month</p>
+    </div>
+
+    <!-- 🔹 Portfolio Overview Section -->
+    <div class="page-header" style="background: white;">
+        <h3>Portfolio Overview</h3>
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-top: 10px;">
+            <div style="flex:1; min-width:45%;">
+                <p style="font-size:13px; color:#6b7280;">Total Properties</p>
+                <h2 id="totalProperties" style="color:#4f46e5;">0</h2>
             </div>
+            <div style="flex:1; min-width:45%;">
+                <p style="font-size:13px; color:#6b7280;">Rented Properties</p>
+                <h2 id="rentedProperties" style="color:#10b981;">0</h2>
+            </div>
+            <div style="flex:1; min-width:45%;">
+                <p style="font-size:13px; color:#6b7280;">Available Units</p>
+                <h2 id="availableProperties" style="color:#f59e0b;">0</h2>
+            </div>
+            <div style="flex:1; min-width:45%;">
+                <p style="font-size:13px; color:#6b7280;">Average Rent</p>
+                <h2 id="averageRent" style="color:#3b82f6;">₹0</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 Income vs Expense Chart -->
+    <div class="page-header" style="background: white;">
+        <h3>Income vs Expense Overview</h3>
+        <canvas id="incomeExpenseChart" height="160"></canvas>
+    </div>
+
+    <!-- 🔹 Valuation Growth -->
+    <div class="page-header" style="background: white;">
+        <h3>Valuation Growth (3 / 5 / 10 Years)</h3>
+        <canvas id="valuationGrowthChart" height="160"></canvas>
+    </div>
+
+    <!-- 🔹 Recent Transactions -->
+    <div class="page-header" style="background: white;">
+        <h3>Recent Transactions</h3>
+        <div id="recent-transactions" style="margin-top: 10px;"></div>
+    </div>
+</div>
+
 
             <!-- Properties Page -->
             <div id="properties" class="page">
@@ -1146,8 +1128,7 @@ input[type="number"], input[type="text"] {
 
                         <div class="upload-section">
                             <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600;">Property Images</label>
-                            <div id="uploadBox" class="upload-box"
-                                 onclick="document.getElementById('fileInput').click()">
+                            <div id="uploadBox" class="upload-box" onclick="document.getElementById('fileInput').click()">
                                 <i class="cloud-icon">☁️</i>
                                 <p>Tap to upload images</p>
                                 <span>PNG, JPG up to 5MB</span>
@@ -1191,119 +1172,116 @@ input[type="number"], input[type="text"] {
                     </div>
 
                     <!-- Step 2 -->
-                  
                     <div id="step2" class="step-content">
-  <h3 class="section-title">Step 2 · Detailed Annual Operations</h3>
-  <p class="subtitle">Calculate baseline Net Operating Income (NOI) using current metrics.</p>
+                        <h3 class="section-title">Step 2 · Detailed Annual Operations</h3>
+                        <p class="subtitle">Calculate baseline Net Operating Income (NOI) using current metrics.</p>
 
-  <div class="sub-tabs">
-    <button class="sub-btn active" onclick="showSubTab('revenue')">Revenue Drivers</button>
-    <button class="sub-btn" onclick="showSubTab('expenses')">Operating Expenses</button>
-    <button class="sub-btn" onclick="showSubTab('finance')">Financing & Investment</button>
-  </div>
+                        <div class="sub-tabs">
+                            <button class="sub-btn active" onclick="showSubTab('revenue')">Revenue Drivers</button>
+                            <button class="sub-btn" onclick="showSubTab('expenses')">Operating Expenses</button>
+                            <button class="sub-btn" onclick="showSubTab('finance')">Financing & Investment</button>
+                        </div>
 
-  <!-- REVENUE -->
-  <div id="sub-revenue" class="sub-tab active">
-    <div class="card">
-      <h4>Core Revenue Drivers</h4>
-      <div class="form-row">
-        <label>Avg Margin per Gallon (₹)</label>
-        <input type="number" id="avgMargin" value="176" oninput="updateTotals()">
-      </div>
-      <div class="form-row">
-        <label>Avg Daily Gallons Sold (%)</label>
-        <input type="number" id="dailyGallons" value="70" oninput="updateTotals()">
-      </div>
-    </div>
+                        <!-- REVENUE -->
+                        <div id="sub-revenue" class="sub-tab active">
+                            <div class="card">
+                                <h4>Core Revenue Drivers</h4>
+                                <div class="form-row">
+                                    <label>Avg Margin per Gallon (₹)</label>
+                                    <input type="number" id="avgMargin" value="176" oninput="updateTotals()">
+                                </div>
+                                <div class="form-row">
+                                    <label>Avg Daily Gallons Sold (%)</label>
+                                    <input type="number" id="dailyGallons" value="70" oninput="updateTotals()">
+                                </div>
+                            </div>
 
-    <div class="card">
-      <h4>Ancillary Revenue Streams</h4>
-      <div id="extraRevenue"></div>
-      <div class="add-row">
-        <input type="text" id="newRevName" placeholder="Name">
-        <input type="number" id="newRevValue" placeholder="Amount">
-        <button onclick="addRevenue()">Add</button>
-      </div>
-    </div>
+                            <div class="card">
+                                <h4>Ancillary Revenue Streams</h4>
+                                <div id="extraRevenue"></div>
+                                <div class="add-row">
+                                    <input type="text" id="newRevName" placeholder="Name">
+                                    <input type="number" id="newRevValue" placeholder="Amount">
+                                    <button onclick="addRevenue()">Add</button>
+                                </div>
+                            </div>
 
-    <div class="summary-box">
-      <p><b>Total Calculated Revenue:</b> ₹<span id="totalRevenue">0</span></p>
-    </div>
-  </div>
+                            <div class="summary-box">
+                                <p><b>Total Calculated Revenue:</b> ₹<span id="totalRevenue">0</span></p>
+                            </div>
+                        </div>
 
-  <!-- EXPENSES -->
-  <div id="sub-expenses" class="sub-tab">
-    <div class="card">
-      <h4>Structural & CapEx Maintenance</h4>
-      <div id="maintenanceList">
-        <div class="expense-item"><input type="text" value="Roof/Foundation"><input type="number" value="50000" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button></div>
-        <div class="expense-item"><input type="text" value="HVAC/Plumbing"><input type="number" value="150000" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button></div>
-      </div>
-    </div>
+                        <!-- EXPENSES -->
+                        <div id="sub-expenses" class="sub-tab">
+                            <div class="card">
+                                <h4>Structural & CapEx Maintenance</h4>
+                                <div id="maintenanceList">
+                                    <div class="expense-item"><input type="text" value="Roof/Foundation"><input type="number" value="50000" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button></div>
+                                    <div class="expense-item"><input type="text" value="HVAC/Plumbing"><input type="number" value="150000" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button></div>
+                                </div>
+                            </div>
 
-    <div class="card">
-      <h4>Operational Expenses</h4>
-      <div id="operatingList">
-        <div class="expense-item"><input type="text" value="Staffing & Payroll"><input type="number" value="1550000" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button></div>
-        <div class="expense-item"><input type="text" value="Utilities & Services"><input type="number" value="300000" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button></div>
-      </div>
-    </div>
+                            <div class="card">
+                                <h4>Operational Expenses</h4>
+                                <div id="operatingList">
+                                    <div class="expense-item"><input type="text" value="Staffing & Payroll"><input type="number" value="1550000" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button></div>
+                                    <div class="expense-item"><input type="text" value="Utilities & Services"><input type="number" value="300000" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button></div>
+                                </div>
+                            </div>
 
-    <div class="card">
-      <h4>Custom Expenses (₹)</h4>
-      <div id="customExpenses"></div>
-      <div class="add-row">
-        <input type="text" id="customName" placeholder="Name">
-        <input type="number" id="customAmount" placeholder="Amount">
-        <button onclick="addCustomExpense()">Add</button>
-      </div>
-    </div>
+                            <div class="card">
+                                <h4>Custom Expenses (₹)</h4>
+                                <div id="customExpenses"></div>
+                                <div class="add-row">
+                                    <input type="text" id="customName" placeholder="Name">
+                                    <input type="number" id="customAmount" placeholder="Amount">
+                                    <button onclick="addCustomExpense()">Add</button>
+                                </div>
+                            </div>
 
-    <div class="summary-box">
-      <p><b>Total Calculated Expenses:</b> ₹<span id="totalExpenses">0</span></p>
-    </div>
-  </div>
+                            <div class="summary-box">
+                                <p><b>Total Calculated Expenses:</b> ₹<span id="totalExpenses">0</span></p>
+                            </div>
+                        </div>
 
-  <!-- FINANCE -->
-  <div id="sub-finance" class="sub-tab">
-    <div class="card yellow">
-      <h4>Loan Components (P&I)</h4>
-      <div id="loanList"></div>
-      <button class="add-btn" onclick="addLoan()">+ Add New Loan</button>
-    </div>
+                        <!-- FINANCE -->
+                        <div id="sub-finance" class="sub-tab">
+                            <div class="card yellow">
+                                <h4>Loan Components (P&I)</h4>
+                                <div id="loanList"></div>
+                                <button class="add-btn" onclick="addLoan()">+ Add New Loan</button>
+                            </div>
 
-    <div class="card green">
-      <h4>Investment Inputs (Equity & Costs)</h4>
-      <div class="form-row">
-        <label>Cash Investment (Equity)</label>
-        <input type="number" id="cashInvestment" value="5000000" oninput="updateTotals()">
-      </div>
-      <div class="form-row">
-        <label>Closing Costs (% of Purchase Price)</label>
-        <input type="number" id="closingCost" value="3" oninput="updateTotals()">
-      </div>
-    </div>
+                            <div class="card green">
+                                <h4>Investment Inputs (Equity & Costs)</h4>
+                                <div class="form-row">
+                                    <label>Cash Investment (Equity)</label>
+                                    <input type="number" id="cashInvestment" value="5000000" oninput="updateTotals()">
+                                </div>
+                                <div class="form-row">
+                                    <label>Closing Costs (% of Purchase Price)</label>
+                                    <input type="number" id="closingCost" value="3" oninput="updateTotals()">
+                                </div>
+                            </div>
 
-    <div class="summary-box">
-      <p><b>Total Equity Invested:</b> ₹<span id="totalEquity">0</span></p>
-      <p><b>Annual Debt Service (P&I):</b> ₹<span id="totalLoan">0</span></p>
-    </div>
-  </div>
+                            <div class="summary-box">
+                                <p><b>Total Equity Invested:</b> ₹<span id="totalEquity">0</span></p>
+                                <p><b>Annual Debt Service (P&I):</b> ₹<span id="totalLoan">0</span></p>
+                            </div>
+                        </div>
 
-  <div class="dynamic-summary">
-    <h4>Dynamic Readout</h4>
-    <p><b>Total Revenue:</b> ₹<span id="dynRevenue">0</span></p>
-    <p><b>Total Expenses:</b> ₹<span id="dynExpenses">0</span></p>
-    <p><b>Current NOI:</b> ₹<span id="dynNOI">0</span></p>
-  </div>
+                        <div class="dynamic-summary">
+                            <h4>Dynamic Readout</h4>
+                            <p><b>Total Revenue:</b> ₹<span id="dynRevenue">0</span></p>
+                            <p><b>Total Expenses:</b> ₹<span id="dynExpenses">0</span></p>
+                            <p><b>Current NOI:</b> ₹<span id="dynNOI">0</span></p>
+                        </div>
 
-  <div class="buttons">
-    <button class="back-btn" onclick="showStep(1)">← Back</button>
-    <button class="next-btn" onclick="showStep(3)">Next · Projections →</button>
-  </div>
-</div>
-
-
+                        <div class="buttons">
+                            <button class="back-btn" onclick="showStep(1)">← Back</button>
+                            <button class="next-btn" onclick="showStep(3)">Next · Projections →</button>
+                        </div>
+                    </div>
 
                     <!-- Step 3 -->
                     <div id="step3" class="step-content">
@@ -1326,8 +1304,7 @@ input[type="number"], input[type="text"] {
 
                         <div class="buttons">
                             <button class="back-btn" onclick="showStep(2)">← Back</button>
-                           <button class="next-btn" onclick="saveProperty()">💾 Save Property</button>
-
+                            <button class="next-btn" onclick="saveProperty()">💾 Save Property</button>
                         </div>
                     </div>
                 </div>
@@ -1346,7 +1323,7 @@ input[type="number"], input[type="text"] {
                             <span class="flow-title">Total Income</span>
                             <i class="fas fa-arrow-up" style="color: #10b981; font-size: 18px;"></i>
                         </div>
-                        <div class="flow-amount income" id="totalIncome">$9,800</div>
+                        <div class="flow-amount income" id="totalIncome">₹0</div>
                         <p style="color: #777; font-size: 12px;">This month</p>
                     </div>
 
@@ -1355,7 +1332,7 @@ input[type="number"], input[type="text"] {
                             <span class="flow-title">Total Expenses</span>
                             <i class="fas fa-arrow-down" style="color: #ef4444; font-size: 18px;"></i>
                         </div>
-                        <div class="flow-amount expense" id="totalExpenses">$2,450</div>
+                        <div class="flow-amount expense" id="totalExpenses">₹0</div>
                         <p style="color: #777; font-size: 12px;">This month</p>
                     </div>
 
@@ -1364,7 +1341,7 @@ input[type="number"], input[type="text"] {
                             <span class="flow-title">Net Profit</span>
                             <i class="fas fa-chart-line" style="color: #667eea; font-size: 18px;"></i>
                         </div>
-                        <div class="flow-amount profit" id="netProfit">$7,350</div>
+                        <div class="flow-amount profit" id="netProfit">₹0</div>
                         <p style="color: #777; font-size: 12px;">This month</p>
                     </div>
                 </div>
@@ -1373,116 +1350,86 @@ input[type="number"], input[type="text"] {
                     <h3 style="margin-bottom: 12px; color: #333; font-size: 15px;">Recent Transactions</h3>
                     <div id="transactions-list"></div>
                 </div>
+
+                <div class="page-header" style="margin-top: 20px;">
+                    <h3 style="font-size: 15px; color: #333;">3-Year Cash Flow</h3>
+                    <canvas id="flow3yr"></canvas>
+                </div>
+
+                <div class="page-header">
+                    <h3 style="font-size: 15px; color: #333;">5-Year Cash Flow</h3>
+                    <canvas id="flow5yr"></canvas>
+                </div>
+
+                <div class="page-header">
+                    <h3 style="font-size: 15px; color: #333;">10-Year Cash Flow</h3>
+                    <canvas id="flow10yr"></canvas>
+                </div>
             </div>
 
             <!-- Settings Page -->
             <div id="settings" class="page">
-                <div class="page-header">
-                    <h1>Settings</h1>
-                    <p>Manage your preferences</p>
-                </div>
+                <div class="settings-container">
+                    <h2>Settings</h2>
 
-                <div class="settings-section">
-                    <h3>Profile Settings</h3>
-                    <div class="form-group">
+                    <div class="profile-image-section">
+                        <div class="image-wrapper" onclick="document.getElementById('profilePicInput').click()">
+                            <img id="profilePicPreview" src="https://via.placeholder.com/100" alt="Profile" />
+                            <div class="overlay">📷</div>
+                        </div>
+                        <input type="file" id="profilePicInput" accept="image/*" onchange="loadProfileImage(event)" />
+                    </div>
+
+                    <div class="section">
+                        <h3>Profile</h3>
                         <label>Full Name</label>
-                        <input type="text" value="John Anderson">
-                    </div>
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" value="john@propmanager.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" value="+1 (555) 123-4567">
-                    </div>
-                    <button class="btn-primary">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
-                </div>
+                        <input type="text" id="fullName" placeholder="Enter full name" />
 
-                <div class="settings-section">
-                    <h3>Notifications</h3>
-                    
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <h4>Email Notifications</h4>
-                            <p>Receive email updates</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="Enter email address" />
+
+                        <label>Phone</label>
+                        <input type="text" id="phone" placeholder="+91 98765 43210" />
                     </div>
 
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <h4>Payment Reminders</h4>
-                            <p>Get rent due notifications</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
+                    <div class="section">
+                        <h3>Preferences</h3>
+                        <label>Theme</label>
+                        <select id="theme">
+                            <option>Light</option>
+                            <option>Dark</option>
+                        </select>
 
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <h4>Maintenance Alerts</h4>
-                            <p>Receive maintenance updates</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>Preferences</h3>
-                    
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <h4>Dark Mode</h4>
-                            <p>Enable dark theme</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="form-group">
                         <label>Currency</label>
-                        <select>
-                            <option>USD - US Dollar ($)</option>
-                            <option>EUR - Euro (€)</option>
-                            <option>INR - Indian Rupee (₹)</option>
+                        <select id="currency">
+                            <option>INR (₹)</option>
+                            <option>USD ($)</option>
+                            <option>EUR (€)</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="settings-section">
-                    <h3>Security</h3>
-                    
-                    <div class="form-group">
+                    <div class="section">
+                        <h3>Data Export</h3>
+                        <div class="export-btns">
+                            <button class="export-btn" onclick="exportData('pdf')">Export as PDF</button>
+                            <button class="export-btn" onclick="exportData('excel')">Export as Excel</button>
+                            <button class="export-btn" onclick="exportData('csv')">Export as CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>Security</h3>
                         <label>Current Password</label>
-                        <input type="password" placeholder="Enter current password">
-                    </div>
-                    <div class="form-group">
+                        <input type="password" id="currentPass" placeholder="Enter current password" />
+
                         <label>New Password</label>
-                        <input type="password" placeholder="Enter new password">
+                        <input type="password" id="newPass" placeholder="Enter new password" />
                     </div>
-                    <div class="form-group">
-                        <label>Confirm Password</label>
-                        <input type="password" placeholder="Confirm new password">
-                    </div>
-                    
-                    <button class="btn-primary">
-                        <i class="fas fa-lock"></i> Update Password
-                    </button>
+
+                    <button class="save-btn" onclick="saveSettings()">💾 Save Changes</button>
                 </div>
             </div>
+
         </main>
 
         <!-- Bottom Navigation -->
@@ -1575,9 +1522,10 @@ input[type="number"], input[type="text"] {
                 image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400"
             }
         };
-        
+
         let nextPropertyId = 4;
         let currentDeleteId = null;
+        let chartInstances = {};
 
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
@@ -1594,17 +1542,19 @@ input[type="number"], input[type="text"] {
             
             if (pageId === 'properties') renderProperties();
             if (pageId === 'dashboard') updateDashboard();
-            if (pageId === 'cash-flow') updateCashFlow();
+            if (pageId === 'cash-flow') {
+                updateCashFlow();
+                renderCashFlowCharts();
+            }
+            if (pageId === 'settings') loadSettings();
         }
 
         function renderProperties() {
             const propertyGrid = document.getElementById('properties-grid');
-            const recentProperties = document.getElementById('recent-properties');
             
             if (Object.keys(properties).length === 0) {
                 document.getElementById('empty-state').style.display = 'block';
                 propertyGrid.innerHTML = '';
-                recentProperties.innerHTML = '<p>No properties added yet.</p>';
                 return;
             }
             
@@ -1612,8 +1562,6 @@ input[type="number"], input[type="text"] {
             const sortedProperties = Object.values(properties).sort((a, b) => b.id - a.id);
             
             propertyGrid.innerHTML = sortedProperties.map(property => createPropertyCard(property)).join('');
-            recentProperties.innerHTML = sortedProperties.slice(0, 3).map(property => createPropertyCard(property)).join('');
-            
             filterProperties();
         }
 
@@ -1646,7 +1594,7 @@ input[type="number"], input[type="text"] {
                             </div>
                         </div>
                         <div class="property-footer">
-                            <div class="property-price">${parseFloat(property.monthlyRent).toLocaleString()}/mo</div>
+                            <div class="property-price">₹${parseFloat(property.monthlyRent).toLocaleString()}/mo</div>
                             <div class="property-actions">
                                 <button class="btn-icon btn-view" onclick="viewProperty(${property.id})" title="View">
                                     <i class="fas fa-eye"></i>
@@ -1671,7 +1619,7 @@ input[type="number"], input[type="text"] {
             const property = properties[id];
             if (!property) return;
             
-            alert(`Property: ${property.propertyName}\nType: ${property.propertyType}\nAddress: ${property.streetAddress}, ${property.city}\nBedrooms: ${property.bedrooms}\nBathrooms: ${property.bathrooms}\nRent: ${property.monthlyRent}/mo\nStatus: ${property.propertyStatus}`);
+            alert(`Property: ${property.propertyName}\nType: ${property.propertyType}\nAddress: ${property.streetAddress}, ${property.city}\nBedrooms: ${property.bedrooms}\nBathrooms: ${property.bathrooms}\nRent: ₹${property.monthlyRent}/mo\nStatus: ${property.propertyStatus}`);
         }
 
         function cloneProperty(id) {
@@ -1748,24 +1696,72 @@ input[type="number"], input[type="text"] {
             document.getElementById('empty-state').style.display = visibleCount === 0 ? 'block' : 'none';
         }
 
-        function updateDashboard() {
-            const totalProperties = Object.keys(properties).length;
-            const rentedProperties = Object.values(properties).filter(p => p.propertyStatus === 'rented').length;
-            const maintenanceProperties = Object.values(properties).filter(p => p.propertyStatus === 'maintenance').length;
-            
-            const monthlyRevenue = Object.values(properties).reduce((total, property) => {
-                return total + (property.propertyStatus === 'rented' ? parseFloat(property.monthlyRent) : 0);
-            }, 0);
-            
-            const occupancyRate = totalProperties > 0 ? Math.round((rentedProperties / totalProperties) * 100) : 0;
-            
-            document.getElementById('totalProperties').textContent = totalProperties;
-            document.getElementById('monthlyRevenue').textContent = `${(monthlyRevenue/1000).toFixed(1)}k`;
-            document.getElementById('occupiedUnits').textContent = `${occupancyRate}%`;
-            document.getElementById('maintenanceRequests').textContent = maintenanceProperties;
-        }
+       function updateDashboard() {
+  const totalIncome = Object.values(properties).reduce((t, p) => t + (p.propertyStatus === 'rented' ? parseFloat(p.monthlyRent) : 0), 0);
+  const totalExpenses = Math.round(totalIncome * 0.25);
+  const netProfit = totalIncome - totalExpenses;
+  const rented = Object.values(properties).filter(p => p.propertyStatus === 'rented').length;
+  const available = Object.values(properties).filter(p => p.propertyStatus === 'available').length;
+  const avgRent = totalIncome / (rented || 1);
 
-        function updateCashFlow() {
+  document.getElementById('dashIncome').textContent = '₹' + totalIncome.toLocaleString();
+  document.getElementById('dashExpense').textContent = '₹' + totalExpenses.toLocaleString();
+  document.getElementById('dashProfit').textContent = '₹' + netProfit.toLocaleString();
+  document.getElementById('totalProperties').textContent = Object.keys(properties).length;
+  document.getElementById('rentedProperties').textContent = rented;
+  document.getElementById('availableProperties').textContent = available;
+  document.getElementById('averageRent').textContent = '₹' + Math.round(avgRent).toLocaleString();
+
+  updateTransactions();
+  renderHomeCharts(totalIncome, totalExpenses);
+}
+      
+function renderHomeCharts(income, expenses) {
+  // Destroy if exists
+  if (window.homeCharts) {
+    window.homeCharts.forEach(c => c.destroy());
+  }
+  window.homeCharts = [];
+
+  const incomeExpenseCtx = document.getElementById('incomeExpenseChart');
+  const valuationCtx = document.getElementById('valuationGrowthChart');
+  if (!incomeExpenseCtx || !valuationCtx) return;
+
+  const incomeExpenseChart = new Chart(incomeExpenseCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Income', 'Expenses', 'Profit'],
+      datasets: [{
+        data: [income, expenses, income - expenses],
+        backgroundColor: ['#10b981', '#ef4444', '#3b82f6']
+      }]
+    },
+    options: { plugins: { legend: { display: false } } }
+  });
+
+  const valuationChart = new Chart(valuationCtx, {
+    type: 'line',
+    data: {
+      labels: ['3 Years', '5 Years', '10 Years'],
+      datasets: [{
+        label: 'Valuation',
+        data: [2500000, 3500000, 5000000],
+        borderColor: '#8b5cf6',
+        fill: true,
+        backgroundColor: 'rgba(139,92,246,0.15)',
+        tension: 0.3
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: false } }
+    }
+  });
+
+  window.homeCharts.push(incomeExpenseChart, valuationChart);
+}
+
+function updateCashFlow() {
             const totalIncome = Object.values(properties).reduce((total, property) => {
                 return total + (property.propertyStatus === 'rented' ? parseFloat(property.monthlyRent) : 0);
             }, 0);
@@ -1773,19 +1769,22 @@ input[type="number"], input[type="text"] {
             const totalExpenses = Math.round(totalIncome * 0.25);
             const netProfit = totalIncome - totalExpenses;
             
-            document.getElementById('totalIncome').textContent = `${totalIncome.toLocaleString()}`;
-            document.getElementById('totalExpenses').textContent = `${totalExpenses.toLocaleString()}`;
-            document.getElementById('netProfit').textContent = `${netProfit.toLocaleString()}`;
+            document.getElementById('totalIncome').textContent = '₹' + totalIncome.toLocaleString();
+            document.getElementById('totalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
+            document.getElementById('netProfit').textContent = '₹' + netProfit.toLocaleString();
             
             updateTransactions();
         }
 
         function updateTransactions() {
             const transactionsList = document.getElementById('transactions-list');
+            const dashTransactions = document.getElementById('recent-transactions');
             const rentedProperties = Object.values(properties).filter(p => p.propertyStatus === 'rented');
             
             if (rentedProperties.length === 0) {
-                transactionsList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px 0;">No recent transactions</p>';
+                const emptyMsg = '<p style="text-align: center; color: #999; padding: 20px 0;">No recent transactions</p>';
+                if (transactionsList) transactionsList.innerHTML = emptyMsg;
+                if (dashTransactions) dashTransactions.innerHTML = '<p style="color:#6b7280;">No recent transactions.</p>';
                 return;
             }
             
@@ -1802,17 +1801,134 @@ input[type="number"], input[type="text"] {
             
             transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            transactionsList.innerHTML = transactions.map(t => `
+            const transactionHTML = transactions.map(t => `
                 <div class="transaction-item">
                     <div class="transaction-info">
                         <h4>${t.name}</h4>
                         <p>${t.date}</p>
                     </div>
                     <div class="transaction-amount income">
-                        +${t.amount.toLocaleString()}
+                        +₹${t.amount.toLocaleString()}
                     </div>
                 </div>
             `).join('');
+            
+            if (transactionsList) transactionsList.innerHTML = transactionHTML;
+            
+            if (dashTransactions) {
+                const dashHTML = transactions.slice(0, 3).map(t => `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                        <span style="color:#374151;">${t.name}</span>
+                        <span style="color:#10b981;">+₹${t.amount.toLocaleString()}</span>
+                    </div>
+                `).join('');
+                dashTransactions.innerHTML = dashHTML;
+            }
+        }
+
+        function renderCashFlowCharts() {
+            // Destroy existing charts to prevent duplicates
+            Object.values(chartInstances).forEach(chart => chart.destroy());
+            chartInstances = {};
+
+            const makeChart = (id, labels, income, expense, valuation) => {
+                const ctx = document.getElementById(id);
+                if (!ctx) return;
+
+                chartInstances[id] = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: "Income",
+                                data: income,
+                                borderColor: "#10b981",
+                                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: "Expense",
+                                data: expense,
+                                borderColor: "#ef4444",
+                                backgroundColor: "rgba(239, 68, 68, 0.1)",
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: "Valuation",
+                                data: valuation,
+                                borderColor: "#3b82f6",
+                                backgroundColor: "rgba(59, 130, 246, 0.1)",
+                                fill: true,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: "bottom",
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Years",
+                                    font: { size: 11 }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "Amount (₹)",
+                                    font: { size: 11 }
+                                },
+                                beginAtZero: false,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + (value / 1000) + 'k';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            // 3-Year Chart
+            makeChart("flow3yr", ["Y1", "Y2", "Y3"],
+                [120000, 150000, 180000],
+                [60000, 80000, 95000],
+                [2500000, 2750000, 3100000]
+            );
+
+            // 5-Year Chart
+            makeChart("flow5yr", ["Y1", "Y2", "Y3", "Y4", "Y5"],
+                [120000, 135000, 145000, 160000, 175000],
+                [60000, 65000, 72000, 78000, 85000],
+                [2500000, 2700000, 2900000, 3200000, 3500000]
+            );
+
+            // 10-Year Chart
+            makeChart("flow10yr", ["Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10"],
+                [120000, 130000, 140000, 150000, 160000, 175000, 190000, 205000, 220000, 235000],
+                [60000, 62000, 64000, 66000, 68000, 70000, 73000, 76000, 79000, 82000],
+                [2500000, 2600000, 2700000, 2800000, 2950000, 3100000, 3250000, 3400000, 3550000, 3700000]
+            );
         }
 
         function showStep(step) {
@@ -1822,62 +1938,71 @@ input[type="number"], input[type="text"] {
             document.getElementById(`step${step}`).classList.add('active');
         }
 
-       function showSubTab(tab) {
-  document.querySelectorAll('.sub-tab').forEach(e => e.classList.remove('active'));
-  document.querySelectorAll('.sub-btn').forEach(e => e.classList.remove('active'));
-  document.getElementById('sub-' + tab).classList.add('active');
-  document.querySelector(`.sub-btn[onclick="showSubTab('${tab}')"]`).classList.add('active');
-}
-function removeItem(btn){btn.parentElement.remove();updateTotals();}
+        function showSubTab(tab) {
+            document.querySelectorAll('.sub-tab').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.sub-btn').forEach(e => e.classList.remove('active'));
+            document.getElementById('sub-' + tab).classList.add('active');
+            document.querySelector(`.sub-btn[onclick="showSubTab('${tab}')"]`).classList.add('active');
+        }
 
-function addRevenue(){
-  const n=document.getElementById("newRevName").value,v=document.getElementById("newRevValue").value;
-  if(!n||!v)return alert("Enter name & amount");
-  const d=document.createElement("div");
-  d.className="expense-item";
-  d.innerHTML=`<input type="text" value="${n}"><input type="number" value="${v}" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button>`;
-  document.getElementById("extraRevenue").appendChild(d);
-  document.getElementById("newRevName").value="";document.getElementById("newRevValue").value="";
-  updateTotals();
-}
+        function removeItem(btn) {
+            btn.parentElement.remove();
+            updateTotals();
+        }
 
-function addCustomExpense(){
-  const n=document.getElementById("customName").value,v=document.getElementById("customAmount").value;
-  if(!n||!v)return alert("Enter name & amount");
-  const d=document.createElement("div");
-  d.className="expense-item";
-  d.innerHTML=`<input type="text" value="${n}"><input type="number" value="${v}" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button>`;
-  document.getElementById("customExpenses").appendChild(d);
-  document.getElementById("customName").value="";document.getElementById("customAmount").value="";
-  updateTotals();
-}
-function addLoan(){
-  const d=document.createElement("div");
-  d.className="expense-item";
-  d.innerHTML=`<input type="text" placeholder="Loan Name"><input type="number" placeholder="Amount" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button>`;
-  document.getElementById("loanList").appendChild(d);
-  updateTotals();
-}
+        function addRevenue() {
+            const n = document.getElementById("newRevName").value;
+            const v = document.getElementById("newRevValue").value;
+            if (!n || !v) return alert("Enter name & amount");
+            const d = document.createElement("div");
+            d.className = "expense-item";
+            d.innerHTML = `<input type="text" value="${n}"><input type="number" value="${v}" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button>`;
+            document.getElementById("extraRevenue").appendChild(d);
+            document.getElementById("newRevName").value = "";
+            document.getElementById("newRevValue").value = "";
+            updateTotals();
+        }
 
-function updateTotals(){
-  const numSum=id=>[...document.querySelectorAll(`#${id} input[type=number]`)]
-    .reduce((a,i)=>a+Number(i.value||0),0);
-  const rev=numSum('extraRevenue')+Number(document.getElementById('avgMargin').value||0)*Number(document.getElementById('dailyGallons').value||0);
-  const exp=numSum('maintenanceList')+numSum('operatingList')+numSum('customExpenses');
-  const loans=numSum('loanList');
-  const equity=Number(document.getElementById('cashInvestment').value||0)+
-               (Number(document.getElementById('closingCost').value||0)/100)*Number(document.getElementById('cashInvestment').value||0);
-  const noi=rev-exp;
+        function addCustomExpense() {
+            const n = document.getElementById("customName").value;
+            const v = document.getElementById("customAmount").value;
+            if (!n || !v) return alert("Enter name & amount");
+            const d = document.createElement("div");
+            d.className = "expense-item";
+            d.innerHTML = `<input type="text" value="${n}"><input type="number" value="${v}" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button>`;
+            document.getElementById("customExpenses").appendChild(d);
+            document.getElementById("customName").value = "";
+            document.getElementById("customAmount").value = "";
+            updateTotals();
+        }
 
-  document.getElementById('totalRevenue').textContent=rev.toLocaleString();
-  document.getElementById('totalExpenses').textContent=exp.toLocaleString();
-  document.getElementById('totalEquity').textContent=equity.toLocaleString();
-  document.getElementById('totalLoan').textContent=loans.toLocaleString();
-  document.getElementById('dynRevenue').textContent=rev.toLocaleString();
-  document.getElementById('dynExpenses').textContent=exp.toLocaleString();
-  document.getElementById('dynNOI').textContent=noi.toLocaleString();
-}
-updateTotals();
+        function addLoan() {
+            const d = document.createElement("div");
+            d.className = "expense-item";
+            d.innerHTML = `<input type="text" placeholder="Loan Name"><input type="number" placeholder="Amount" oninput="updateTotals()"><button onclick="removeItem(this)">✖</button>`;
+            document.getElementById("loanList").appendChild(d);
+            updateTotals();
+        }
+
+        function updateTotals() {
+            const numSum = id => [...document.querySelectorAll(`#${id} input[type=number]`)]
+                .reduce((a, i) => a + Number(i.value || 0), 0);
+            const rev = numSum('extraRevenue') + Number(document.getElementById('avgMargin').value || 0) * Number(document.getElementById('dailyGallons').value || 0);
+            const exp = numSum('maintenanceList') + numSum('operatingList') + numSum('customExpenses');
+            const loans = numSum('loanList');
+            const equity = Number(document.getElementById('cashInvestment').value || 0) +
+                (Number(document.getElementById('closingCost').value || 0) / 100) * Number(document.getElementById('cashInvestment').value || 0);
+            const noi = rev - exp;
+
+            document.getElementById('totalRevenue').textContent = rev.toLocaleString();
+            document.getElementById('totalExpenses').textContent = exp.toLocaleString();
+            document.getElementById('totalEquity').textContent = equity.toLocaleString();
+            document.getElementById('totalLoan').textContent = loans.toLocaleString();
+            document.getElementById('dynRevenue').textContent = rev.toLocaleString();
+            document.getElementById('dynExpenses').textContent = exp.toLocaleString();
+            document.getElementById('dynNOI').textContent = noi.toLocaleString();
+        }
+
         function updateSlider(id, val) {
             document.getElementById(id).innerText = val + '%';
         }
@@ -1922,26 +2047,7 @@ updateTotals();
             });
         }
 
-      
-
-            function addRevenue() {
-  const name = document.getElementById("newRevName").value;
-  const value = document.getElementById("newRevValue").value;
-  if (!name || !value) return alert("Enter name & amount");
-
-  const div = document.createElement("div");
-  div.className = "revenue-item";
-  div.innerHTML = `<input type="text" value="${name}">
-                   <input type="number" value="${value}">
-                   <button onclick="this.parentElement.remove()">✖</button>`;
-  document.getElementById("extraRevenue").appendChild(div);
-
-  document.getElementById("newRevName").value = "";
-  document.getElementById("newRevValue").value = "";
-}
-
-function saveProperty() {
-            // Validate Step 1 fields
+        function saveProperty() {
             const propertyName = document.getElementById("propertyName").value.trim();
             const propertyType = document.getElementById("propertyType").value;
             const purchasePrice = document.getElementById("purchasePrice").value;
@@ -1953,27 +2059,22 @@ function saveProperty() {
                 return;
             }
 
-            // Get dynamic field value
             const dynamicInput = document.getElementById("dynamicInput");
             const dynamicValue = dynamicInput ? dynamicInput.value : "";
 
-            // Get Step 2 financial data
             const totalRevenue = document.getElementById("totalRevenue").textContent.replace(/,/g, '');
             const totalExpenses = document.getElementById("totalExpenses").textContent.replace(/,/g, '');
             const noi = document.getElementById("dynNOI").textContent.replace(/,/g, '');
             const totalEquity = document.getElementById("totalEquity").textContent.replace(/,/g, '');
 
-            // Get Step 3 projections
             const revGrowth = document.getElementById("revVal").textContent;
             const expGrowth = document.getElementById("expVal").textContent;
             const exitCap = document.getElementById("capVal").textContent;
 
-            // Get images from preview
             const images = Array.from(document.querySelectorAll('#previewContainer img'))
                 .map(img => img.src);
             const mainImage = images.length > 0 ? images[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400';
 
-            // Create new property matching the existing structure
             const newProperty = {
                 id: nextPropertyId++,
                 propertyName: propertyName,
@@ -1988,7 +2089,6 @@ function saveProperty() {
                 monthlyRent: purchasePrice,
                 propertyStatus: "available",
                 image: mainImage,
-                // Additional financial data
                 financials: {
                     purchasePrice: purchasePrice,
                     totalRevenue: totalRevenue,
@@ -2001,10 +2101,8 @@ function saveProperty() {
                 }
             };
 
-            // Add to properties object
             properties[newProperty.id] = newProperty;
 
-            // Clear form
             document.getElementById("propertyName").value = "";
             document.getElementById("propertyType").value = "";
             document.getElementById("purchasePrice").value = "";
@@ -2012,19 +2110,97 @@ function saveProperty() {
             document.getElementById("previewContainer").innerHTML = "";
             document.getElementById("dynamicFieldContainer").innerHTML = "";
 
-            // Reset to step 1
             showStep(1);
 
-            // Update displays
             renderProperties();
             updateDashboard();
             updateCashFlow();
 
-            // Show success message and navigate
             alert("✅ Property saved successfully!");
             showPage('properties');
         }
 
+        function loadProfileImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById("profilePicPreview").src = e.target.result;
+                const settings = JSON.parse(localStorage.getItem("userSettings")) || {};
+                settings.profilePic = e.target.result;
+                localStorage.setItem("userSettings", JSON.stringify(settings));
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveSettings() {
+            const settings = {
+                fullName: document.getElementById("fullName").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                theme: document.getElementById("theme").value,
+                currency: document.getElementById("currency").value,
+                profilePic: document.getElementById("profilePicPreview").src
+            };
+
+            localStorage.setItem("userSettings", JSON.stringify(settings));
+            alert("✅ Settings saved successfully!");
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem("userSettings");
+            if (!saved) return;
+            const settings = JSON.parse(saved);
+
+            document.getElementById("fullName").value = settings.fullName || "";
+            document.getElementById("email").value = settings.email || "";
+            document.getElementById("phone").value = settings.phone || "";
+            document.getElementById("theme").value = settings.theme || "Light";
+            document.getElementById("currency").value = settings.currency || "INR (₹)";
+
+            if (settings.profilePic && settings.profilePic.startsWith("data:image")) {
+                document.getElementById("profilePicPreview").src = settings.profilePic;
+            }
+        }
+
+        function exportData(format) {
+            const propertiesData = Object.values(properties);
+            
+            if (propertiesData.length === 0) {
+                alert("No properties to export!");
+                return;
+            }
+
+            if (format === 'csv') {
+                const headers = ['Property Name', 'Type', 'City', 'Status', 'Monthly Rent'];
+                const rows = propertiesData.map(p => [
+                    p.propertyName,
+                    p.propertyType,
+                    p.city,
+                    p.propertyStatus,
+                    p.monthlyRent
+                ]);
+                
+                let csv = headers.join(',') + '\n';
+                rows.forEach(row => {
+                    csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'properties_export.csv';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                
+                alert('✅ CSV exported successfully!');
+            } else if (format === 'pdf' || format === 'excel') {
+                alert(`${format.toUpperCase()} export functionality - Coming soon! Currently only CSV export is available.`);
+            }
+        }
+
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             ['search-input', 'status-filter', 'type-filter'].forEach(id => {
                 const element = document.getElementById(id);
@@ -2033,10 +2209,184 @@ function saveProperty() {
                 }
             });
 
+            updateTotals();
             renderProperties();
             updateDashboard();
-            updateCashFlow();
+            loadSettings();
         });
-    </script>
+
+     async function exportData(format) {
+  if (format !== "pdf") return alert("Only PDF export supported right now.");
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  let y = 40;
+
+  // ✅ Static property list with images
+  const staticProperties = [
+    {
+      name: "Sunrise Apartments",
+      location: "Ahmedabad",
+      value: "₹45,00,000",
+      income: "₹18,000",
+      expense: "₹4,000",
+      image: "https://picsum.photos/200/120?random=1",
+    },
+    {
+      name: "Skyline Towers",
+      location: "Rajkot",
+      value: "₹55,00,000",
+      income: "₹20,000",
+      expense: "₹5,500",
+      image: "https://picsum.photos/200/120?random=2",
+    },
+    {
+      name: "Ocean View Villa",
+      location: "Jamnagar",
+      value: "₹75,00,000",
+      income: "₹30,000",
+      expense: "₹7,000",
+      image: "https://picsum.photos/200/120?random=3",
+    },
+  ];
+
+  const chartSummary = {
+    totalIncome: "₹5,600",
+    totalExpense: "₹2,450",
+    netProfit: "₹3,150",
+  };
+
+  // --- Header ---
+  doc.setFontSize(18);
+  doc.text("Property Tracker – Full Report", 40, y);
+  y += 30;
+
+  // --- User Info ---
+  doc.setFontSize(12);
+  doc.text("Name: Parth Dattani", 50, y);
+  doc.text("Email: parth@gmail.com", 50, y + 15);
+  doc.text("Phone: 09512359792", 50, y + 30);
+  doc.text("Theme: Light", 50, y + 45);
+  doc.text("Currency: INR (₹)", 50, y + 60);
+  y += 90;
+
+  // --- Property Portfolio ---
+  doc.setFontSize(14);
+  doc.text("Property Portfolio", 40, y);
+  y += 20;
+  doc.setFontSize(11);
+
+  for (let i = 0; i < staticProperties.length; i++) {
+    const p = staticProperties[i];
+
+    // Load property image as Base64
+    try {
+      const img = await loadImageAsBase64(p.image);
+      doc.addImage(img, "JPEG", 50, y, 140, 90);
+    } catch (e) {
+      console.warn("Image failed to load:", e);
+    }
+
+    // Property text
+    doc.text(`${i + 1}. ${p.name} (${p.location})`, 200, y + 15);
+    doc.text(`Value: ${p.value}`, 200, y + 35);
+    doc.text(`Rent: ${p.income}`, 200, y + 50);
+    doc.text(`Expense: ${p.expense}`, 200, y + 65);
+    y += 110;
+
+    // Auto add new page if space runs out
+    if (y > 700) {
+      doc.addPage();
+      y = 60;
+    }
+  }
+
+  y += 20;
+
+  // --- Cash Flow Summary ---
+  doc.setFontSize(14);
+  doc.text("Cash Flow Summary", 40, y);
+  y += 20;
+  doc.setFontSize(11);
+  doc.text(`Total Income: ${chartSummary.totalIncome}`, 50, y);
+  doc.text(`Total Expenses: ${chartSummary.totalExpense}`, 50, y + 15);
+  doc.text(`Net Profit: ${chartSummary.netProfit}`, 50, y + 30);
+  y += 60;
+
+  // --- Create Hidden Charts ---
+  const chartContainer = document.createElement("div");
+  chartContainer.style.display = "none";
+  document.body.appendChild(chartContainer);
+
+  const incomeCanvas = document.createElement("canvas");
+  const growthCanvas = document.createElement("canvas");
+  chartContainer.appendChild(incomeCanvas);
+  chartContainer.appendChild(growthCanvas);
+
+  // Chart 1: Income vs Expense
+  new Chart(incomeCanvas.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: ["Income", "Expenses", "Profit"],
+      datasets: [{
+        data: [5600, 2450, 3150],
+        backgroundColor: ["#10b981", "#ef4444", "#3b82f6"],
+      }],
+    },
+    options: { responsive: false, plugins: { legend: { display: false } } },
+  });
+
+  // Chart 2: Valuation Growth
+  new Chart(growthCanvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: ["3 Years", "5 Years", "10 Years"],
+      datasets: [{
+        label: "Valuation Growth (₹)",
+        data: [4500000, 5800000, 7600000],
+        borderColor: "#8b5cf6",
+        fill: false,
+        tension: 0.3,
+      }],
+    },
+    options: { responsive: false, plugins: { legend: { display: true } } },
+  });
+
+  // Wait to render charts
+  await new Promise((r) => setTimeout(r, 1200));
+
+  // Convert charts to base64 images
+  const img1 = incomeCanvas.toDataURL("image/png");
+  const img2 = growthCanvas.toDataURL("image/png");
+
+  // Add charts
+  doc.addImage(img1, "PNG", 60, y, 480, 220);
+  y += 250;
+
+  if (y > 700) {
+    doc.addPage();
+    y = 60;
+  }
+
+  doc.addImage(img2, "PNG", 60, y, 480, 220);
+
+  // Clean up
+  chartContainer.remove();
+
+  // Save file
+  doc.save("Property_Report.pdf");
+}
+
+// Utility: Convert image URL to Base64
+async function loadImageAsBase64(url) {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+ </script>
 </body>
 </html>
